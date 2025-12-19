@@ -1,13 +1,38 @@
 {
   "name": "@colorfishwyl/ems-editor",
-  "version": "0.1.0",
-  "main": "dist/index.js",
-  "files": ["dist"],
+  "version": "1.0.0",
+  "description": "Vue 3 workflow editor built on top of @antv/x6",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.es.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite --config playground/vite.config.js",
+    "build": "vite build",
+    "prepublishOnly": "npm run build"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/colorfishwyl/ems-editor.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
+  },
+  "dependencies": {
+    "@antv/x6": "^3.1.2",
+    "tslib": "^2.6.2"
+  },
+  "peerDependencies": {
+    "element-plus": "^2.4.4",
+    "pinia": "^2.1.7",
+    "vue": "^3.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "element-plus": "^2.4.4",
+    "pinia": "^2.1.7",
+    "vite": "^5.0.0",
+    "vue": "^3.3.0"
   }
 }
