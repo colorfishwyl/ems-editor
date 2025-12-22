@@ -1,0 +1,107 @@
+{
+  "id": "5087053",
+  "name": "ems-desktop",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "162780",
+      "name": "加",
+      "font_class": "jia",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "5399558",
+      "name": "保存",
+      "font_class": "baocun",
+      "unicode": "e936",
+      "unicode_decimal": 59702
+    },
+    {
+      "icon_id": "17882484",
+      "name": "导出",
+      "font_class": "daochu",
+      "unicode": "e663",
+      "unicode_decimal": 58979
+    },
+    {
+      "icon_id": "25964414",
+      "name": "导入",
+      "font_class": "daoru",
+      "unicode": "e65e",
+      "unicode_decimal": 58974
+    },
+    {
+      "icon_id": "30499276",
+      "name": "还原",
+      "font_class": "huanyuan",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "44063516",
+      "name": "menu-fold",
+      "font_class": "menu-fold",
+      "unicode": "ea25",
+      "unicode_decimal": 59941
+    },
+    {
+      "icon_id": "3989348",
+      "name": "icon_image",
+      "font_class": "icon_image",
+      "unicode": "e67d",
+      "unicode_decimal": 59005
+    },
+    {
+      "icon_id": "1312498",
+      "name": "icon_chart",
+      "font_class": "icon_chart",
+      "unicode": "e645",
+      "unicode_decimal": 58949
+    },
+    {
+      "icon_id": "24606981",
+      "name": "基础控件",
+      "font_class": "jichukongjian",
+      "unicode": "e67e",
+      "unicode_decimal": 59006
+    },
+    {
+      "icon_id": "36951573",
+      "name": "icon-relativity",
+      "font_class": "icon-relativity",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "44044041",
+      "name": "root-list",
+      "font_class": "root-list",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "44063093",
+      "name": "control-platform",
+      "font_class": "control-platform",
+      "unicode": "e9c6",
+      "unicode_decimal": 59846
+    },
+    {
+      "icon_id": "22356450",
+      "name": "icon-yonghu",
+      "font_class": "icon-yonghu",
+      "unicode": "e68c",
+      "unicode_decimal": 59020
+    },
+    {
+      "icon_id": "25739954",
+      "name": "设 置",
+      "font_class": "a-shezhi",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    }
+  ]
+}

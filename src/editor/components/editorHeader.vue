@@ -15,5 +15,6 @@
   z-index: 2;
   display: flex;
   align-items: center;
+  border-bottom: 1px solid #535f79;
 }
 </style>
