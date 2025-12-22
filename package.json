@@ -1,6 +1,6 @@
 {
   "name": "@colorfishwyl/ems-editor",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Vue 3 workflow editor built on top of @antv/x6",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
@@ -25,14 +25,14 @@
   },
   "peerDependencies": {
     "element-plus": "^2.4.4",
-    "pinia": "^2.1.7",
-    "vue": "^3.3.0",
-    "sass": "^1.77.8"
+   "pinia": "^2.1.7 || ^3.0.0",
+    "sass": "^1.77.8",
+    "vue": "^3.3.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",
     "element-plus": "^2.4.4",
-    "pinia": "^2.1.7",
+    "pinia": "^3.0.1",
     "sass": "^1.77.8",
     "vite": "^5.0.0",
     "vue": "^3.3.0"
