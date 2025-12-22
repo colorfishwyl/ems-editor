@@ -1,6 +1,6 @@
 {
   "name": "@colorfishwyl/ems-editor",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Vue 3 workflow editor built on top of @antv/x6",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
