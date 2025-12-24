@@ -1,35 +1,6 @@
 <template>
   <div class="editorArea">
-    <div class="toolBox">
-      <a>
-        <el-tooltip effect="light" content="新增" placement="bottom" popper-class="tooltipcolor">
-          <i class="iconfont icon-jia"></i>
-        </el-tooltip>
-      </a>
-      <a>
-        <el-tooltip effect="light" content="保存" placement="bottom" popper-class="tooltipcolor">
-          <i class="iconfont icon-baocun"></i>
-        </el-tooltip>
-      </a>
-      <div style="flex: 1"></div>
-      <div style="line-height: 40px; margin-left: 8px; width: 34px">65%</div>
-      <a>
-        <el-tooltip effect="light" content="还原100%" placement="bottom" popper-class="tooltipcolor">
-          <i class="iconfont icon-icon-huanyuan"></i>
-        </el-tooltip>
-      </a>
-      <div style="flex: 1"></div>
-      <a>
-        <el-tooltip effect="light" content="导出" placement="bottom" popper-class="tooltipcolor">
-          <i class="iconfont icon-daochu"></i>
-        </el-tooltip>
-      </a>
-      <a>
-        <el-tooltip effect="light" content="导入" placement="bottom" popper-class="tooltipcolor">
-          <i class="iconfont icon-daoru"></i>
-        </el-tooltip>
-      </a>
-    </div>
+    <Toolbar></Toolbar>
     <div class="drawBox">
       <div style="width: 100%; height: 100%">
         <div ref="container" class="editor-container"></div>
@@ -38,9 +9,13 @@
   </div>
 </template>
 <script setup>
-import { ElTooltip } from 'element-plus'
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, inject } from 'vue'
 import { Graph, Scroller, Snapline } from '@antv/x6'
+import Toolbar from './Toolbar/index.vue'
+import { useGraphStore } from "../stores/graph";
+
+const graphStore = useGraphStore()
+const services = inject('topoApi')
 
 const container = ref(null)
 let graph = null
@@ -96,7 +71,7 @@ onMounted(() => {
     scaling: { min: 0.5, max: 2 },
     background: { color: '#000000' },
     grid: {
-      // size: 10,
+      size: 10,
       visible: true,
       type: 'doubleMesh',
       args: [
@@ -129,17 +104,11 @@ onMounted(() => {
     pannable: true
   })
   graph.use(s)
-  graph.fromJSON(data) // 渲染元素
-  graph.zoomTo(0.65, { center: true }) // 缩放
-  setTimeout(() => {
-    graph.center()
-  }, 100)
-  graph.on('scale', ({ sx, sy }) => {
-    // zoom.value = Number((sx * 100).toFixed(0)) // 转成百分比
-  })
+  graphStore.setGraph(graph)
 
-  window.addEventListener('resize', () => {
-    // graph.resize(1920, 1080)
+  graph.on('scale', ({ sx, sy }) => {
+    console.log(sx, sy)
+    graphStore.zoom = Number((sx * 100).toFixed(0)) // 转成百分比
   })
 })
 
@@ -154,46 +123,15 @@ onBeforeUnmount(() => {
   background-color: #080b0f;
 }
 
-.toolBox {
-  height: 40px;
-  display: flex;
-  font-size: 12px;
-  background-color: var(--color-background);
-  flex-shrink: 0;
-  padding: 0 12px;
-  border-bottom: 1px solid #080b0f;
-
-  a {
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    padding: 6px;
-    margin: 4px;
-    border-radius: 4px;
-    color: #bdc7db;
-    text-decoration: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-  }
-
-  a:hover {
-    color: #4583ff;
-    cursor: pointer;
-    text-decoration: none;
-  }
-}
-
-
 .drawBox {
   height: calc(100% - 40px);
   min-height: 0;
+}
 
-  .editor-container {
-    border: 1px solid #1f5ce0;
-    background-color: #c1c9d4;
-    /* 暗蓝背景 */
-  }
+.editor-container {
+  border: 1px solid #1f5ce0;
+  background-color: #c1c9d4;
+  /* 暗蓝背景 */
 }
 
 .tooltipcolor {

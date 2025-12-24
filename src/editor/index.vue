@@ -1,6 +1,6 @@
 <template>
   <div class="ems-editor">
-    <EditorHeader />
+    <!-- <EditorHeader /> -->
     <div class="ems-editor__workspace">
       <NodePanel />
       <EditorArea />
@@ -10,59 +10,27 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref, shallowRef } from "vue";
+import { onBeforeUnmount, onMounted, ref, provide } from "vue";
 import { Graph } from "@antv/x6";
 // import CanvasArea from "./editor/layout/CanvasArea.vue";
 // import IconLibrary from "./editor/layout/IconLibrary.vue";
-import EditorHeader from "./components/editorHeader.vue";
+// import EditorHeader from "./components/editorHeader.vue";
 import EditorArea from "./components/editorArea.vue";
 import NodePanel from "./components/NodePanel/index.vue";
 import PropertiesPanel from "./components/PropertyPanel/index.vue";
-import { useGraphStore } from "./stores/graph";
 
 defineOptions({ name: "EmsEditor" });
 
-// 生成一个随机数
+const emit = defineEmits(["ready", "exit"]);
 
-const emit = defineEmits(["ready"]);
 
 const props = defineProps({
-  grid: {
-    type: [Boolean, Object],
-    default: () => ({ size: 10, visible: true }),
-  },
-  background: {
-    type: [Boolean, String, Object],
-    default: () => ({ color: "#f8f9fc" }),
-  },
-  autoCenter: {
-    type: Boolean,
-    default: true,
-  },
-});
-
-const canvasAreaRef = ref(null);
-const graphRef = shallowRef(null);
-
-const initGraph = () => {
-  const canvasElement = canvasAreaRef.value?.canvasRef;
-  if (!canvasElement || graphRef.value) return;
-
-  const { clientWidth, clientHeight } = canvasElement;
-  graphRef.value = new Graph({
-    container: canvasElement,
-    width: clientWidth || 800,
-    height: clientHeight || 600,
-    grid: props.grid,
-    background: props.background,
-  });
-
-  if (props.autoCenter) {
-    graphRef.value.centerContent();
+  services: {
+    type: Object,
+    required: true
   }
-
-  emit("ready", graphRef.value);
-};
+})
+provide('topoApi', props.services)
 
 onMounted(() => {
   // requestAnimationFrame(initGraph);
@@ -99,7 +67,8 @@ onBeforeUnmount(() => {
 }
 
 .ems-editor__workspace {
-  height: calc(100% - 40px);
+  /* height: calc(100% - 40px); */
+  height: 100%;
   display: flex;
 }
 </style>

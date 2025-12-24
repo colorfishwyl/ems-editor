@@ -1,21 +1,26 @@
 <template>
     <div class="prop">
         <div class="tabContainer">
-            <div v-for="(tab, index) in tabs" :key="index" class="tabItem" :class="{ active: active === index }"
+            <div v-for="(tab, index) in tabs" :key="index" class="tabItem" :class="{ active: activeTab === index }"
                 @click="handleActive(index)">
                 {{ tab }}
                 <div v-show="active === index" class="activeLine"></div>
             </div>
         </div>
-        <div class="main"></div>
+        <div class="main">
+            <mapProperty v-if="activeTab === 0" />
+        </div>
     </div>
 </template>
 <script setup>
 import { ref } from 'vue'
-const tabs = ref(['外观', '动画', '数据', '状态', '交互'])
-const active = ref(0)
+import { usePropertyStore } from '../../stores/property'
+import { storeToRefs } from 'pinia'
+
+const propertyStore = usePropertyStore()
+const { tabs, activeTab } = storeToRefs(propertyStore)
 const handleActive = (index) => {
-    active.value = index
+    activeTab.value = index
 }
 </script>
 <style scoped lang="scss">
@@ -37,7 +42,7 @@ const handleActive = (index) => {
         font-size: 13px;
 
         .tabItem {
-            flex: 1;
+            width: 75px;
             height: 100%;
             box-sizing: border-box;
             display: flex;

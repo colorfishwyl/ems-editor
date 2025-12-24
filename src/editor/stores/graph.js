@@ -3,7 +3,14 @@ import { defineStore } from 'pinia'
 export const useGraphStore = defineStore('editor-graph', {
   state: () => ({
     graph: null,
-    zoom: 1,
+    scrollerStyle: {
+      backgroundColor: '#1e1e1e',
+      borderColor: '#1f5ce0',
+      borderWidth: 1,
+      borderStyle: 'solid',
+      backgroundImage: 'none'
+    },
+    zoom: 100,
     cursor: {
       x: 0,
       y: 0

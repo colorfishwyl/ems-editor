@@ -6,23 +6,8 @@
             <div class="menu" :class="{ active: groupCurrent === 2 }" @click="groupCurrent = 2">我的资源</div>
             <div class="menu" :class="{ active: groupCurrent === 3 }" @click="groupCurrent = 3">数据模拟</div>
         </div>
+        <menus v-if="groupCurrent === 0"></menus>
 
-        <div v-if="groupCurrent === 0" class="groups-menus">
-            <el-menu default-active="1" @open="handleOpen" @close="handleClose" background-color="transparent">
-                <el-sub-menu v-for="menu in menus" :key="menu.index" :index="menu.index" :popper-offset="100">
-                    <template #title>
-                        <el-icon><icon-menu /></el-icon>
-                        <span>{{ menu.title }}</span>
-                    </template>
-                    <el-menu-item v-for="item in menu.children" :key="item.index" :index="item.index">
-                        <el-icon>
-                            <document />
-                        </el-icon>
-                        <template #title>{{ item.title }}</template>
-                    </el-menu-item>
-                </el-sub-menu>
-            </el-menu>
-        </div>
         <div v-else-if="groupCurrent === 1" class="groups-panel">
             <div class="groups">
                 <template v-for="(item, index) in nav1" :key="item.index">
@@ -39,7 +24,8 @@
                         clearable />
                     <el-tooltip effect="light" content="展开/折叠" placement="top">
                         <div style="cursor: pointer; font-size: 20px" @click="handleExpend"><i
-                                class="iconfont icon-menu-fold"></i></div>
+                                class="iconfont icon-menu-fold"></i>
+                        </div>
                     </el-tooltip>
                 </div>
                 <div style="padding: 10px">
@@ -73,7 +59,7 @@ import layout_6 from '../../../assets/topoImg/layout_6.png'
 import layout_7 from '../../../assets/topoImg/layout_7.png'
 import { ref, onMounted } from 'vue'
 import { Document, Menu as IconMenu, Location, Search, Picture as IconPicture } from '@element-plus/icons-vue'
-import { ElCollapse, ElTooltip, ElCollapseItem, ElMenuItem, ElImage, ElInput, ElMenu, ElSubMenu, ElIcon } from 'element-plus'
+import menus from './menus.vue'
 const nav1Current = ref(0)
 const nav1 = ref([
     {
@@ -128,90 +114,7 @@ const handleExpend = () => {
 }
 
 const groupCurrent = ref(0)
-const menus = ref([])
-const handleOpen = (key, keyPath) => {
-    console.log(key, keyPath)
-}
-const handleClose = (key, keyPath) => {
-    console.log(key, keyPath)
-}
 
-onMounted(() => {
-    menus.value = [
-        {
-            index: '1',
-            title: '运行监控',
-            children: [
-                {
-                    index: '1-1',
-                    title: '一次图'
-                },
-                {
-                    index: '1-2',
-                    title: '首页'
-                },
-                {
-                    index: '1-3',
-                    title: '储能列表'
-                },
-                {
-                    index: '1-4',
-                    title: 'PCS列表'
-                },
-                {
-                    index: '1-5',
-                    title: 'BMS列表'
-                },
-                {
-                    index: '1-6',
-                    title: '箱变列表'
-                },
-                {
-                    index: '1-7',
-                    title: '协控'
-                },
-                {
-                    index: '1-8',
-                    title: 'AGC'
-                },
-                {
-                    index: '1-9',
-                    title: 'AVC'
-                },
-                {
-                    index: '1-10',
-                    title: '调峰'
-                },
-                {
-                    index: '1-11',
-                    title: '调频'
-                },
-                {
-                    index: '1-12',
-                    title: '调压'
-                },
-                {
-                    index: '1-13',
-                    title: '调温'
-                },
-                {
-                    index: '1-14',
-                    title: '计划曲线跟踪'
-                }
-            ]
-        },
-        {
-            index: '2',
-            title: '告警管理',
-            children: [
-                {
-                    index: '2-1',
-                    title: '告警列表'
-                }
-            ]
-        }
-    ]
-})
 </script>
 <style scoped lang="scss">
 .graphics {
@@ -354,16 +257,6 @@ onMounted(() => {
                 background-color: transparent !important;
             }
         }
-    }
-
-    .groups-menus {
-        min-height: 0;
-        flex: 1;
-        box-sizing: border-box;
-        border-top: 1px solid #303746;
-        overflow-y: auto;
-        font-size: 12px;
-        z-index: 20;
     }
 }
 </style>
