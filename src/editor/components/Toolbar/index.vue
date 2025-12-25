@@ -27,15 +27,16 @@
     <addMenu v-model="addMenuVis"></addMenu>
 </template>
 <script setup>
-import { ElTooltip } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { ref, onMounted, onBeforeUnmount, inject } from 'vue'
 import { storeToRefs } from 'pinia'
 import addMenu from './addMenu.vue'
 import { useGraphStore } from "../../stores/graph";
+import { useMenusStore } from "../../stores/menus";
 
+const menusStore = useMenusStore();
 const graphStore = useGraphStore()
 const { graph, zoom } = storeToRefs(graphStore)
-const services = inject('topoApi')
 
 const addMenuVis = ref(false)
 const handleAdd = () => {
@@ -44,7 +45,9 @@ const handleAdd = () => {
 }
 
 const handleSave = () => {
-    services.saveMenus('node1', graph.toJSON())
+    menusStore.saveMenu(() => {
+        ElMessage.success("保存成功！")
+    })
 }
 </script>
 <style scoped lang="scss">

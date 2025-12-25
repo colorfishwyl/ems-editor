@@ -3,7 +3,7 @@
     <!-- <EditorHeader /> -->
     <div class="ems-editor__workspace">
       <NodePanel />
-      <EditorArea />
+      <EditorArea :width="props.width" :height="props.height" />
       <PropertiesPanel />
     </div>
   </div>
@@ -11,26 +11,29 @@
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref, provide } from "vue";
-import { Graph } from "@antv/x6";
-// import CanvasArea from "./editor/layout/CanvasArea.vue";
-// import IconLibrary from "./editor/layout/IconLibrary.vue";
-// import EditorHeader from "./components/editorHeader.vue";
 import EditorArea from "./components/editorArea.vue";
 import NodePanel from "./components/NodePanel/index.vue";
 import PropertiesPanel from "./components/PropertyPanel/index.vue";
+import { useMenusStore } from "./stores/menus";
 
 defineOptions({ name: "EmsEditor" });
-
 const emit = defineEmits(["ready", "exit"]);
-
-
 const props = defineProps({
   services: {
     type: Object,
     required: true
+  },
+  width: {
+    type: Number,
+  },
+  height: {
+    type: Number
   }
 })
 provide('topoApi', props.services)
+const menusStore = useMenusStore()
+menusStore.services = props.services
+menusStore.loadAllMenus()
 
 onMounted(() => {
   // requestAnimationFrame(initGraph);

@@ -259,4 +259,23 @@ const groupCurrent = ref(0)
         }
     }
 }
+
+::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #535f79 !important;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent !important;
+}
 </style>

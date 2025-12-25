@@ -4,11 +4,16 @@
             <div v-for="(tab, index) in tabs" :key="index" class="tabItem" :class="{ active: activeTab === index }"
                 @click="handleActive(index)">
                 {{ tab }}
-                <div v-show="active === index" class="activeLine"></div>
+                <div v-show="activeTab === index" class="activeLine"></div>
             </div>
         </div>
         <div class="main">
-            <mapProperty v-if="activeTab === 0" />
+            <template v-if="targetType === 'canvas'">
+                <graphProperty v-if="activeTab === 0" />
+            </template>
+            <template v-else>
+                <!-- <mapProperty v-if="activeTab === 0" /> -->
+            </template>
         </div>
     </div>
 </template>
@@ -16,9 +21,10 @@
 import { ref } from 'vue'
 import { usePropertyStore } from '../../stores/property'
 import { storeToRefs } from 'pinia'
+import graphProperty from './graphProperty.vue'
 
 const propertyStore = usePropertyStore()
-const { tabs, activeTab } = storeToRefs(propertyStore)
+const { targetType, tabs, activeTab } = storeToRefs(propertyStore)
 const handleActive = (index) => {
     activeTab.value = index
 }
@@ -86,6 +92,25 @@ const handleActive = (index) => {
     .main {
         height: calc(100% - 40px);
         background-color: #1e2430;
+
+        ::-webkit-scrollbar {
+            width: 3px;
+            height: 3px;
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #1e2430 !important;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: transparent !important;
+        }
     }
 }
 </style>

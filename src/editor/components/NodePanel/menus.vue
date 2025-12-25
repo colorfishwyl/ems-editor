@@ -1,17 +1,16 @@
 <template>
     <div class="groups-menus">
-        <el-menu default-active="map" @open="handleOpen" @close="handleClose" @select="handleSelect"
-            background-color="transparent">
-            <el-sub-menu v-for="menu in menus" :key="menu.name" :index="menu.name" :popper-offset="100">
+        <el-menu :default-active="current[1]" @select="handleSelect" background-color="transparent">
+            <el-sub-menu v-for="menu in menus" :key="menu.code" :index="menu.code" :popper-offset="100">
                 <template #title>
                     <el-icon><icon-menu /></el-icon>
-                    <span>{{ menu.label }}</span>
+                    <span>{{ menu.name }}</span>
                 </template>
-                <el-menu-item v-for="item in menu.children" :key="item.name" :index="item.name">
+                <el-menu-item v-for="item in menu.children" :key="item.code" :index="item.code">
                     <el-icon>
                         <document />
                     </el-icon>
-                    <template #title>{{ item.label }}</template>
+                    <template #title>{{ item.name }}</template>
                 </el-menu-item>
             </el-sub-menu>
         </el-menu>
@@ -21,32 +20,17 @@
 import { ref, onMounted, inject, watch } from 'vue'
 import { Document, Menu as IconMenu, Picture as IconPicture } from '@element-plus/icons-vue'
 import { storeToRefs } from 'pinia'
-import { useGraphStore } from "../../stores/graph";
 import { useMenusStore } from "../../stores/menus";
 
 const menusStore = useMenusStore()
-const graphStore = useGraphStore()
 const { menus, current } = storeToRefs(menusStore)
-const { graph } = storeToRefs(graphStore)
-const services = inject('topoApi')
-menus.value = services.getAllMenus()
-const handleOpen = (key, keyPath) => {
-    console.log(key, keyPath)
-}
-const handleClose = (key, keyPath) => {
-    console.log(key, keyPath)
-}
-const handleSelect = (key, keyPath) => {
-    menusStore.setCurrentMenu(keyPath, graph.value, services.getMenuJson(key) || {})
-}
 
-watch(graph, (newVal, oldVal) => {
-    if (oldVal === null && newVal) {
-        handleSelect(menus.value[0].name, [menus.value[0].name, menus.value[0].children[0].name])
-    }
-})
+const handleSelect = (key, keyPath) => {
+    menusStore.setCurrentMenu(keyPath)
+}
 
 onMounted(() => {
+    console.log(menus, current)
 })
 </script>
 <style scoped lang="scss">
