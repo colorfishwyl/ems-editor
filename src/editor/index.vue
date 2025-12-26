@@ -40,10 +40,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  if (graphRef.value) {
-    graphRef.value.dispose();
-    graphRef.value = null;
-  }
 });
 </script>
 <style lang="css">

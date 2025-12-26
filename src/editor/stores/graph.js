@@ -1,23 +1,32 @@
 import { defineStore } from 'pinia'
-import { Graph, Scroller, Snapline } from '@antv/x6'
+import { Graph, Scroller, Snapline, Dnd, Transform } from '@antv/x6'
+import registerInit from '../nodes/register'
 
 const styleTemp = {
   backgroundColor: '#1e1e1e',
   backgroundImage: null
 }
 
+const transformOption = {
+  enabled: true,
+  minWidth: 1,
+  maxWidth: 1000,
+  minHeight: 1,
+  maxHeight: 1500,
+  orthogonal: false,
+  restrict: false,
+  preserveAspectRatio: false,
+}
+
 export const useGraphStore = defineStore('editor-graph', {
   state: () => ({
     el: null,
     graph: null,
+    dnd: null,
     style: { ...styleTemp, width: 1920, height: 1080 },
     name: '',
     code: '',
     zoom: 100,
-    cursor: {
-      x: 0,
-      y: 0
-    },
   }),
 
   getters: {
@@ -55,6 +64,11 @@ export const useGraphStore = defineStore('editor-graph', {
         },
         translating: {
           restrict: true
+        },
+        connecting: {
+          snap: true,
+          allowLoop: false,
+          allowMulti: false
         }
       })
 
@@ -73,20 +87,39 @@ export const useGraphStore = defineStore('editor-graph', {
       })
 
       this.graph.use(s)
-
+      this.dnd = new Dnd({
+        target: this.graph,
+        validateNode() {
+          return true;
+        },
+      });
+      this.graph.use(
+        new Transform({
+          resizing: transformOption,
+        }),
+      )
+      registerInit()
       this.graph.on('scale', ({ sx, sy }) => {
         console.log(sx, sy)
         this.zoom = Number((sx * 100).toFixed(0)) // 转成百分比
       })
+
+      this.graph.on('node:added', ({ node }) => {
+
+      })
+
+      this.graph.on('node:resized', ({ node }) => {
+        console.log('Node resized:', node.id, node.size());
+      })
     },
 
-    loadMenu({ name, code, json, style }) {
+    loadMenu({ name, code, value, style }) {
       if (!this.graph) {
         return
       }
       this.name = name;
       this.code = code;
-      this.graph.fromJSON(json || {})
+      this.graph.fromJSON(value || {})
       if (style) {
         this.style = { ...this.style, ...styleTemp, ...style }
       } else {
@@ -101,11 +134,6 @@ export const useGraphStore = defineStore('editor-graph', {
 
     setZoom(scale) {
       this.zoom = Number(scale)
-    },
-
-    setCursor(x, y) {
-      this.cursor.x = x
-      this.cursor.y = y
     },
 
     updateSize(width, height, callback) {

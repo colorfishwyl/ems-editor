@@ -6,6 +6,7 @@
         <div ref="container" class="editor-container"
           :style="{ backgroundColor: style.backgroundColor, backgroundImage: style.backgroundImage ? `url(${style.backgroundImage})` : 'none' }">
         </div>
+        <TeleportContainer />
       </div>
     </div>
   </div>
@@ -13,6 +14,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, inject } from 'vue'
 import Toolbar from './Toolbar/index.vue'
+import { getTeleport } from '@antv/x6-vue-shape'
 import { storeToRefs } from 'pinia'
 import { useGraphStore } from "../stores/graph";
 import { useMenusStore } from "../stores/menus";
@@ -22,6 +24,8 @@ const graphStore = useGraphStore()
 const { style } = storeToRefs(graphStore)
 const props = defineProps(['width', 'height'])
 const container = ref(null)
+const TeleportContainer = getTeleport()
+
 onMounted(() => {
   graphStore.el = container.value
   graphStore.style.height = props.height || 1080

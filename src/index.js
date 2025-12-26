@@ -1,4 +1,5 @@
 import EmsEditor from "./editor/index.vue";
+import EmsPreview from './editor/preview.vue'
 
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -22,5 +23,5 @@ const install = (app) => {
   install.installed = true;
 };
 
-export { EmsEditor, install };
-export default { install, EmsEditor };
+export { EmsEditor, EmsPreview, install };
+export default { install, EmsEditor, EmsPreview };

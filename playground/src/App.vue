@@ -59,7 +59,7 @@ const getMenus = () => {
     item.code = crypto.randomUUID()
     item.children.forEach(child => {
       child.code = crypto.randomUUID()
-      child.sytle = {}
+      child.style = {}
       child.value = {}
     })
   });
@@ -95,12 +95,12 @@ const editorServices = {
     let parentCode = ''
     if (parent === '-1') {
       parentCode = crypto.randomUUID()
-      menus.push({ name: parentNameNew, code: parentCode, children: [{ name, code, sytle: {}, value: {} }] })
+      menus.push({ name: parentNameNew, code: parentCode, children: [{ name, code, style: {}, value: {} }] })
     } else {
       const parentItem = menus.find(item => item.code === parent);
       if (parentItem) {
         parentCode = parentItem.code
-        parentItem.children.push({ name, code, sytle: {}, value: {} });
+        parentItem.children.push({ name, code, style: {}, value: {} });
       }
     }
     Storage.setItem(code, this.getMenu(code))
@@ -129,7 +129,7 @@ const editorServices = {
   clearMenus(code) {
     const menu = this.getMenu(code);
     if (menu) {
-      menu.sytle = {};
+      menu.style = {};
       menu.value = {};
     }
     Storage.setItem(code, menu || {});

@@ -35,6 +35,22 @@ export const useMenusStore = defineStore('menus', {
       }
       this.services.saveMenus(menusJson)
       if (callback) callback()
+    },
+    clearMenu(callback) {
+      const graphStore = useGraphStore()
+      const menusJson = {
+        name: graphStore.name,
+        code: this.current[1],
+        style: graphStore.style,
+        value: {}
+      }
+      this.services.saveMenus(menusJson)
+      graphStore.graph.clearCells()
+      if (callback) callback()
+    },
+    deleteMenu(callback) {
+
+      if (callback) callback()
     }
   },
 })

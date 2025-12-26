@@ -6,6 +6,62 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1719345",
+      "name": "预览",
+      "font_class": "yulan",
+      "unicode": "e7b9",
+      "unicode_decimal": 59321
+    },
+    {
+      "icon_id": "7533297",
+      "name": "图标",
+      "font_class": "tubiao",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "17875595",
+      "name": "图片",
+      "font_class": "tupian",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
+    {
+      "icon_id": "7193685",
+      "name": "文字",
+      "font_class": "wenzi",
+      "unicode": "e732",
+      "unicode_decimal": 59186
+    },
+    {
+      "icon_id": "12550358",
+      "name": "新建",
+      "font_class": "xinjian",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "15023268",
+      "name": "矩形框",
+      "font_class": "juxingkuang",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "6219264",
+      "name": "清空",
+      "font_class": "qingkong",
+      "unicode": "e946",
+      "unicode_decimal": 59718
+    },
+    {
+      "icon_id": "11372693",
+      "name": "删除",
+      "font_class": "shanchu",
+      "unicode": "e8b6",
+      "unicode_decimal": 59574
+    },
+    {
       "icon_id": "162780",
       "name": "加",
       "font_class": "jia",
