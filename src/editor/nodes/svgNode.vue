@@ -1,7 +1,6 @@
 <template>
-    <div :style="{ width: width + 'px', height: height + 'px' }" class="testNode">
-        <el-progress type="circle" :percentage="percentage" :width="wid">
-        </el-progress>
+    <div :style="{ width: width + 'px', height: height + 'px' }" class="svgNode">
+        <div class="svg-icon" v-html="svg" :style="{ color: color }"></div>
     </div>
 </template>
 
@@ -9,10 +8,11 @@
 import { ref, onMounted, onBeforeUnmount, inject, computed } from 'vue'
 
 const getNode = inject('getNode')
-const percentage = ref(80)
 
-const width = ref(128)
-const height = ref(128)
+const width = ref(50)
+const height = ref(50)
+const svg = ref("")
+const color = ref("#ffffff")
 
 const wid = computed(() => {
     return Math.min(width.value, height.value)
@@ -23,41 +23,43 @@ const updateSize = ({ current }) => {
     height.value = current.height
 }
 
-const updateData = ({ current }) => {
-    const { progress } = current
-    percentage.value = progress
-}
-
 let node = null
-let timer = null
 
 onMounted(() => {
     node = getNode()
     width.value = node.size().width
     height.value = node.size().height
-    node.on('change:data', updateData)
+    svg.value = node.getData().svg
+    color.value = node.getData().value
+    // node.on('change:data', updateData)
     node.on('change:size', updateSize)
-    timer = setInterval(() => {
-        const { progress } = node.getData()
-        node.setData({
-            progress: (progress + 10) % 100,
-        })
-    }, 500)
-
 })
 
 onBeforeUnmount(() => {
-    node.off('change:data', updateData)
+    // node.off('change:data', updateData)
     node.off('change:size', updateSize)
-    if (timer) clearInterval(timer)
 })
 
 </script>
 <style scoped lang="scss">
-.testNode {
+.svgNode {
     display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
+
+    .svg-icon {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    }
 }
 </style>

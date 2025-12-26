@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="main">
-            <template v-if="targetType === 'canvas'">
+            <template v-if="targetType === 'blank'">
                 <graphProperty v-if="activeTab === 0" />
             </template>
             <template v-else>

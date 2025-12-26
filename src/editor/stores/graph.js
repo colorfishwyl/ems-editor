@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { Graph, Scroller, Snapline, Dnd, Transform } from '@antv/x6'
 import registerInit from '../nodes/register'
+import { usePropertyStore } from './property'
 
 const styleTemp = {
   backgroundColor: '#1e1e1e',
@@ -99,18 +100,7 @@ export const useGraphStore = defineStore('editor-graph', {
         }),
       )
       registerInit()
-      this.graph.on('scale', ({ sx, sy }) => {
-        console.log(sx, sy)
-        this.zoom = Number((sx * 100).toFixed(0)) // 转成百分比
-      })
-
-      this.graph.on('node:added', ({ node }) => {
-
-      })
-
-      this.graph.on('node:resized', ({ node }) => {
-        console.log('Node resized:', node.id, node.size());
-      })
+      this.initEvent()
     },
 
     loadMenu({ name, code, value, style }) {
@@ -145,5 +135,35 @@ export const useGraphStore = defineStore('editor-graph', {
       }, 100)
     },
 
+    initEvent() {
+      // Initialize any event listeners here if needed
+      this.graph.on('scale', ({ sx, sy }) => {
+        console.log(sx, sy)
+        this.zoom = Number((sx * 100).toFixed(0)) // 转成百分比
+      })
+
+      this.graph.on('node:added', ({ node }) => {
+
+      })
+
+      this.graph.on('node:resized', ({ node }) => {
+        console.log('Node resized:', node.id, node.size());
+      })
+      const propertyStore = usePropertyStore()
+      this.graph.on('blank:click', ({ e, x, y }) => {
+        console.log('Blank click at:', x, y, e);
+        propertyStore.setTarget('blank', null)
+      });
+
+      this.graph.on('edge:click', ({ e, x, y }) => {
+        console.log('Edge click at:', x, y);
+        propertyStore.setTarget('edge', e)
+      });
+
+      this.graph.on('node:click', ({ e, x, y }) => {
+        console.log('Node click at:', x, y);
+        propertyStore.setTarget('node', e)
+      });
+    }
   }
 })

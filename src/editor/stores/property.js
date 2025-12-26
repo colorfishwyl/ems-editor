@@ -1,23 +1,24 @@
 import { defineStore } from 'pinia'
 
 const targetType = {
-  CANVAS: 'canvas',
+  Blank: 'blank',
   NODE: 'node',
   EDGE: 'edge',
 }
 
 export const usePropertyStore = defineStore('property', {
   state: () => ({
-    targetType: targetType.CANVAS,
+    targetType: targetType.Blank,
+    cell: null,
     tabs: ['画布'],
     activeTab: 0,
   }),
   getters: {
   },
   actions: {
-    setTargetType(type) {
+    setTarget(type, cell) {
       this.targetType = type
-      if (type === targetType.CANVAS) {
+      if (type === targetType.Blank) {
         this.tabs = ['画布']
       } else {
         this.tabs = ['外观', '数据', '动画', '状态', '交互']

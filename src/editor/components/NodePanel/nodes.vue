@@ -26,17 +26,23 @@
                         <el-collapse-item :title="cItem.name" :name="cIndex">
                             <div class="expand-content"
                                 :style="{ gridTemplateColumns: cItem.layout ? cItem.layout : '1fr 1fr 1fr' }">
-                                <div v-for="(iconItem, iconIndex) in cItem.list" :key="iconIndex" class="graphic"
-                                    @mousedown="startDrag" :data-type="iconItem.type">
-                                    <template v-if="iconItem.renderType === renderType.IMG">
-                                        <el-image :src="iconItem.icon"
-                                            style="width: 100px; height: 60px; margin: auto"></el-image>
-                                    </template>
-                                    <template v-if="iconItem.renderType === renderType.ICON">
-                                        <i :class="iconItem.icon" style="font-size: 24px;"></i>
-                                    </template>
-                                    <p>{{ iconItem.name }}</p>
-                                </div>
+                                <template v-for="(iconItem, iconIndex) in cItem.list" :key="iconIndex">
+                                    <div class="graphic" @mousedown="startDrag($event, iconItem)"
+                                        :title="iconItem.name">
+                                        <template v-if="iconItem.renderType === renderType.IMG">
+                                            <el-image :src="iconItem.icon"
+                                                style="width: 100px; height: 60px; margin: auto"></el-image>
+                                        </template>
+                                        <template v-if="iconItem.renderType === renderType.ICON">
+                                            <i :class="iconItem.icon" style="font-size: 24px;"></i>
+                                        </template>
+                                        <template v-if="iconItem.renderType === renderType.SVG">
+                                            <div class="svg-icon" v-html="iconItem.icon"></div>
+                                        </template>
+                                        <p>{{ iconItem.name }}</p>
+                                    </div>
+                                </template>
+
                             </div>
                         </el-collapse-item>
                     </template>
@@ -57,7 +63,7 @@ import layout_7 from '../../../assets/topoImg/layout_7.png'
 import { ref, onMounted } from 'vue'
 import { Document, Menu as IconMenu, Location, Search, Picture as IconPicture } from '@element-plus/icons-vue'
 import { useGraphStore } from "../../stores/graph";
-
+import { iconList } from './icons'
 const graphStore = useGraphStore()
 const renderType = {
     IMG: 'img',
@@ -110,7 +116,22 @@ const nav1 = ref([
     },
     { name: '设备', icon: 'iconfont icon-control-platform', children: [], active: [] },
     { name: '图表', icon: 'iconfont icon-icon_chart', children: [], active: [] },
-    { name: '素材', icon: 'iconfont icon-icon_image', children: [], active: [] }
+    {
+        name: '素材', icon: 'iconfont icon-icon_image', children: [
+            {
+                name: '电器svg',
+                layout: '1fr 1fr 1fr',
+                list: iconList.map(i => {
+                    return {
+                        name: i.name,
+                        renderType: 'svg',
+                        nodeType: 'svg',
+                        icon: i.svg
+                    }
+                })
+            },
+        ], active: []
+    }
 ])
 const nav1Filter = ref('')
 const handleNavClick = (index) => {
@@ -128,10 +149,16 @@ const handleExpend = () => {
     }
 }
 
-const startDrag = (e) => {
-    const target = e.currentTarget;
-    const type = target.getAttribute("data-type");
-    let node = graphStore.graph.createNode({ shape: 'custom-vue-node' });
+const startDrag = (e, iconItem) => {
+    // const type = iconItem.nodeType;
+    console.log(iconItem)
+    let node
+    if (iconItem.nodeType === 'svg') {
+        node = graphStore.graph.createNode({ shape: 'svg-node' });
+        node.setData({ svg: iconItem.icon, name: iconItem.name })
+    } else {
+        node = graphStore.graph.createNode({ shape: 'custom-vue-node' });
+    }
     graphStore.dnd.start(node, e);
 };
 
@@ -200,6 +227,22 @@ const startDrag = (e) => {
                 border-radius: 2px;
                 border: 1px solid transparent;
                 text-align: center;
+
+                .svg-icon {
+                    width: 50px;
+                    height: 50px;
+                    margin: auto;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    svg {
+                        color: '#ff0000';
+                        width: 100%;
+                        height: 100%;
+                        display: block;
+                    }
+                }
 
                 p {
                     margin-top: 10px;
