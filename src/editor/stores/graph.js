@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { Graph, Scroller, Snapline, Dnd, Transform } from '@antv/x6'
+import { Graph, Scroller, Snapline, Dnd, Transform, Clipboard, Keyboard, Selection, History, Shape } from '@antv/x6'
 import registerInit from '../nodes/register'
 import { usePropertyStore } from './property'
 
@@ -26,7 +26,7 @@ export const useGraphStore = defineStore('editor-graph', {
     dnd: null,
     style: { ...styleTemp, width: 1920, height: 1080 },
     name: '',
-    code: '',
+    id: '',
     zoom: 100,
   }),
 
@@ -43,34 +43,70 @@ export const useGraphStore = defineStore('editor-graph', {
       this.graph = new Graph({
         container: this.el,
         autoResize: true,
-        mousewheel: true,
+        // virtual: true,
+        mousewheel: {
+          enabled: true,
+          factor: 0.1,
+        },
         panning: false,
         scaling: { min: 0.5, max: 2 },
         background: { color: '#000000' },
         grid: {
-          size: 10,
+          size: 5,
           visible: true,
-          type: 'doubleMesh',
-          args: [
-            {
-              color: '#4b4b4b', // 主网格线颜色
-              thickness: 1 // 主网格线宽度
-            },
-            {
-              color: '#313131', // 次网格线颜色
-              thickness: 1, // 次网格线宽度
-              factor: 4 // 主次网格线间隔
-            }
-          ]
+          type: 'mesh',
+          args: {
+            color: 'rgba(100, 100, 100, 0.6)', // 网格线颜色
+            thickness: 1, // 网格线宽度
+          },
         },
         translating: {
           restrict: true
         },
         connecting: {
-          snap: true,
+          router: 'orth',
+          connector: {
+            name: 'normal'
+          },
+          args: {
+            padding: 0,
+            direction: 'H',
+          },
+          anchor: 'center',
+          connectionPoint: 'anchor',
+          allowBlank: true,
           allowLoop: false,
-          allowMulti: false
-        }
+          allowMulti: false,
+          snap: {
+            radius: 20,
+          },
+          createEdge() {
+            return new Shape.Edge({
+              attrs: {
+                line: {
+                  stroke: '#03e6f7ff',
+                  strokeWidth: 2,
+                  targetMarker: null
+                },
+              },
+              zIndex: 0,
+            })
+          },
+          validateConnection({ targetMagnet }) {
+            return !!targetMagnet
+          },
+        },
+        highlighting: {
+          magnetAdsorbed: {
+            name: 'stroke',
+            args: {
+              attrs: {
+                fill: '#5F95FF',
+                stroke: '#5F95FF',
+              },
+            },
+          },
+        },
       })
 
       this.graph.use(
@@ -96,19 +132,41 @@ export const useGraphStore = defineStore('editor-graph', {
       });
       this.graph.use(
         new Transform({
-          resizing: transformOption,
+          resizing: true,
+          rotating: true,
+          // resizing: transformOption,
         }),
       )
+      this.graph.use(
+        new Clipboard({
+          enabled: true,
+        }),
+      )
+      this.graph.use(
+        new Keyboard({
+          enabled: true,
+          global: true,
+        }),
+      ).use(
+        new Selection({
+          rubberband: true,
+          rubberNode: true,
+          rubberEdge: true,
+          showNodeSelectionBox: true,
+          showEdgeSelectionBox: true,
+          modifiers: ['meta', 'shift', 'ctrl'],
+        }),
+      ).use(new History())
       registerInit()
       this.initEvent()
     },
 
-    loadMenu({ name, code, value, style }) {
+    loadMenu({ name, id, value, style }) {
       if (!this.graph) {
         return
       }
       this.name = name;
-      this.code = code;
+      this.id = id;
       this.graph.fromJSON(value || {})
       if (style) {
         this.style = { ...this.style, ...styleTemp, ...style }
@@ -116,9 +174,13 @@ export const useGraphStore = defineStore('editor-graph', {
         this.style = { ...this.style, ...styleTemp };
       }
       setTimeout(() => {
-        // const zoomFactor = this.style.width ? 1300 / this.style.width : 0.65;
-        this.graph.zoomTo(0.8);
+        const zoomFactor = Math.min(1280 / this.style.width, 840 / this.style.height);
+        console.log(zoomFactor, this.style.width, this.style.height)
+        this.graph.zoomTo(zoomFactor);
         this.graph.center()
+        console.log(this.graph.getScrollbarPosition())
+        const propertyStore = usePropertyStore()
+        propertyStore.setTarget('blank', null)
       }, 100)
     },
 
@@ -136,14 +198,12 @@ export const useGraphStore = defineStore('editor-graph', {
     },
 
     initEvent() {
-      // Initialize any event listeners here if needed
+      this.graph.on('node:moving', (a) => {
+        // console.log('node:moving', a)
+      })
       this.graph.on('scale', ({ sx, sy }) => {
         console.log(sx, sy)
         this.zoom = Number((sx * 100).toFixed(0)) // 转成百分比
-      })
-
-      this.graph.on('node:added', ({ node }) => {
-
       })
 
       this.graph.on('node:resized', ({ node }) => {
@@ -164,6 +224,106 @@ export const useGraphStore = defineStore('editor-graph', {
         console.log('Node click at:', x, y);
         propertyStore.setTarget('node', e)
       });
+
+      this.graph.on('edge:mouseenter', ({ cell }) => {
+        // cell.addTools([
+        //   {
+        //     name: 'vertices',
+        //     args: {
+        //       attrs: { fill: '#666' },
+        //       modifiers: ['meta', 'shift', 'ctrl']
+        //     },
+        //   },
+        //   {
+        //     name: 'source-arrowhead',
+        //     args: {
+        //       attrs: { fill: '#666', 'stroke-width': 0, },
+        //     },
+        //   },
+        //   {
+        //     name: 'target-arrowhead',
+        //     args: {
+        //       attrs: { fill: '#666', 'stroke-width': 0, },
+        //     },
+        //   }
+        // ])
+      })
+
+      this.graph.on('edge:mouseleave', ({ cell }) => {
+        if (cell.hasTool('vertices')) {
+          cell.removeTool('vertices')
+        }
+        if (cell.hasTool('source-arrowhead')) {
+          cell.removeTool('source-arrowhead')
+        }
+        if (cell.hasTool('target-arrowhead')) {
+          cell.removeTool('target-arrowhead')
+        }
+      })
+
+      this.graph.bindKey(['meta+c', 'ctrl+c'], () => {
+        const cells = this.graph.getSelectedCells()
+        if (cells.length) {
+          this.graph.copy(cells)
+        }
+        return false
+      })
+      this.graph.bindKey(['meta+x', 'ctrl+x'], () => {
+        const cells = this.graph.getSelectedCells()
+        if (cells.length) {
+          this.graph.cut(cells)
+        }
+        return false
+      })
+      this.graph.bindKey(['meta+v', 'ctrl+v'], () => {
+        if (!this.graph.isClipboardEmpty()) {
+          const cells = this.graph.paste({ offset: 32 })
+          this.graph.cleanSelection()
+          this.graph.select(cells)
+        }
+        return false
+      })
+      this.graph.bindKey(['meta+z', 'ctrl+z'], () => {
+        if (this.graph.canUndo()) {
+          this.graph.undo()
+        }
+        return false
+      })
+      this.graph.bindKey(['meta+shift+z', 'ctrl+shift+z'], () => {
+        if (this.graph.canRedo()) {
+          this.graph.redo()
+        }
+        return false
+      })
+      this.graph.bindKey(['meta+a', 'ctrl+a'], () => {
+        const nodes = this.graph.getNodes()
+        if (nodes) {
+          this.graph.select(nodes)
+        }
+      })
+      this.graph.bindKey('backspace', () => {
+        const cells = this.graph.getSelectedCells()
+        if (cells.length) {
+          this.graph.removeCells(cells)
+        }
+      })
+      const showPorts = (ports, show) => {
+        for (let i = 0, len = ports.length; i < len; i += 1) {
+          ports[i].style.visibility = show ? 'visible' : 'hidden'
+        }
+      }
+      this.graph.on('node:mouseenter', () => {
+        const ports = this.el.querySelectorAll(
+          '.x6-port-body',
+        )
+        showPorts(ports, true)
+      })
+      this.graph.on('node:mouseleave', () => {
+        const ports = this.el.querySelectorAll(
+          '.x6-port-body',
+        )
+        showPorts(ports, false)
+      })
     }
   }
 })

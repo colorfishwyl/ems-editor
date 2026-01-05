@@ -1,12 +1,12 @@
 <template>
     <div class="groups-menus">
         <el-menu :default-active="current[1]" @select="handleSelect" background-color="transparent">
-            <el-sub-menu v-for="menu in menus" :key="menu.code" :index="menu.code" :popper-offset="100">
+            <el-sub-menu v-for="menu in menus" :key="menu.id" :index="menu.id" :popper-offset="100">
                 <template #title>
                     <el-icon><icon-menu /></el-icon>
                     <span>{{ menu.name }}</span>
                 </template>
-                <el-menu-item v-for="item in menu.children" :key="item.code" :index="item.code">
+                <el-menu-item v-for="item in menu.children" :key="item.id" :index="item.id">
                     <el-icon>
                         <document />
                     </el-icon>

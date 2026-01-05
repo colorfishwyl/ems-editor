@@ -25,15 +25,15 @@ const { style } = storeToRefs(graphStore)
 const props = defineProps(['width', 'height'])
 const container = ref(null)
 const TeleportContainer = getTeleport()
+const editorServices = inject('topoApi')
 
 onMounted(() => {
   graphStore.el = container.value
   graphStore.style.height = props.height || 1080
   graphStore.style.width = props.width || 1920
   graphStore.init()
-  if (menusStore.menus[0] && menusStore.menus[0].children[0]) {
-    menusStore.setCurrentMenu([menusStore.menus[0].code, menusStore.menus[0].children[0].code])
-  }
+  menusStore.services = editorServices
+  menusStore.loadAllMenus(true)
 })
 
 onBeforeUnmount(() => {
@@ -61,5 +61,51 @@ onBeforeUnmount(() => {
 
 .tooltipcolor {
   color: #ffffff;
+}
+</style>
+<style>
+.x6-widget-stencil {
+  background-color: #fff;
+}
+
+.x6-widget-stencil-title {
+  background-color: #fff;
+}
+
+.x6-widget-stencil-group-title {
+  background-color: #fff !important;
+}
+
+.x6-widget-transform {
+  margin: -1px 0 0 -1px;
+  padding: 0px;
+  border: 1px solid #239edd;
+}
+
+.x6-widget-transform>div {
+  border: 1px solid #239edd;
+}
+
+.x6-widget-transform>div:hover {
+  background-color: #3dafe4;
+}
+
+.x6-widget-transform-active-handle {
+  background-color: #3dafe4;
+}
+
+.x6-widget-transform-resize {
+  border-radius: 0;
+}
+
+.x6-widget-selection-inner {
+  border: 1px solid #239edd;
+  box-shadow: none;
+}
+
+.x6-widget-selection-box {
+  opacity: 1;
+  border: 1px solid #239edd;
+  box-shadow: none;
 }
 </style>

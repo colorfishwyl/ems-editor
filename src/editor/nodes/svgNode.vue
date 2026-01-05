@@ -1,6 +1,6 @@
 <template>
     <div :style="{ width: width + 'px', height: height + 'px' }" class="svgNode">
-        <div class="svg-icon" v-html="svg" :style="{ color: color }"></div>
+        <div class="svg-icon" v-html="svg" :style="{ color: color, width: wid + 'px', height: wid + 'px' }"></div>
     </div>
 </template>
 
@@ -29,7 +29,7 @@ onMounted(() => {
     node = getNode()
     width.value = node.size().width
     height.value = node.size().height
-    svg.value = node.getData().svg
+    svg.value = node.getData().icon
     color.value = node.getData().value
     // node.on('change:data', updateData)
     node.on('change:size', updateSize)
@@ -46,20 +46,18 @@ onBeforeUnmount(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: absolute;
+    overflow: hidden;
+}
 
-    .svg-icon {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+.svg-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 
-        svg {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
+    svg {
+        display: block;
+        fill: currentColor;
     }
 }
 </style>

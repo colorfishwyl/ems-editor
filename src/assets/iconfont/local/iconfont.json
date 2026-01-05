@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "4354249",
+      "name": "形状-矩形",
+      "font_class": "xingzhuang-juxing",
+      "unicode": "eb97",
+      "unicode_decimal": 60311
+    },
+    {
+      "icon_id": "7671554",
+      "name": "数值",
+      "font_class": "shuzhi",
+      "unicode": "e6c1",
+      "unicode_decimal": 59073
+    },
+    {
+      "icon_id": "25529590",
+      "name": "线段",
+      "font_class": "xianduan",
+      "unicode": "e6ce",
+      "unicode_decimal": 59086
+    },
+    {
       "icon_id": "1719345",
       "name": "预览",
       "font_class": "yulan",
@@ -39,13 +60,6 @@
       "font_class": "xinjian",
       "unicode": "e626",
       "unicode_decimal": 58918
-    },
-    {
-      "icon_id": "15023268",
-      "name": "矩形框",
-      "font_class": "juxingkuang",
-      "unicode": "e601",
-      "unicode_decimal": 58881
     },
     {
       "icon_id": "6219264",

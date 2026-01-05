@@ -3,13 +3,13 @@
         <el-form ref="formRef" :model="form" label-width="auto" style="padding: 10px 20px" :rules="rules">
             <el-form-item label="上级目录" prop="parent">
                 <el-select v-model="form.parent" placeholder="请选择上级目录">
-                    <el-option value="-1" label="根目录"></el-option>
-                    <el-option v-for="item in menus" :key="item.code" :label="item.name" :value="item.code">
+                    <el-option value="0" label="根目录"></el-option>
+                    <el-option v-for="item in menus" :key="item.id" :label="item.name" :value="item.id">
                     </el-option>
                 </el-select>
             </el-form-item>
-            <template v-if="form.parent == '-1'">
-                <el-form-item label="一级目录名称" prop="parentLabelNew">
+            <template v-if="form.parent == '0'">
+                <el-form-item label="一级目录名称" prop="parentNameNew">
                     <el-input v-model="form.parentNameNew"></el-input>
                 </el-form-item>
             </template>
@@ -26,22 +26,20 @@
     </el-dialog>
 </template>
 <script setup>
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, onMounted } from "vue";
 import { useMenusStore } from "../../stores/menus";
 import { storeToRefs } from "pinia";
 const menusStore = useMenusStore();
 
 const { menus } = storeToRefs(menusStore);
-const props = defineProps({
-    modelValue: Boolean,
-});
-const emits = defineEmits(["update:modelValue"]);
 
-const dialogVisible = ref(props.modelValue);
+const emits = defineEmits(["close"]);
+
+const dialogVisible = ref(false);
 
 function close() {
     dialogVisible.value = false;
-    emits("update:modelValue", false);
+    emits("close");
 }
 
 const formRef = ref(null);
@@ -91,23 +89,9 @@ const submit = async () => {
         submitLoading.value = false;
     }
 }
-watch(
-    () => props.modelValue,
-    (v) => {
-        dialogVisible.value = v;
-        if (v) {
-            form.value = {
-                parent: null,
-                parentNameNew: "",
-                name: "",
-            };
-            nextTick(() => {
-                if (formRef.value) {
-                    formRef.value.clearValidate();
-                }
-            });
-        }
-    }
-);
+
+onMounted(() => {
+    dialogVisible.value = true;
+})
 </script>
 <style scoped lang="scss"></style>

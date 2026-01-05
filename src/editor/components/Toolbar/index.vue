@@ -44,7 +44,7 @@
             </a>
         </div>
     </div>
-    <addMenu v-model="addMenuVis"></addMenu>
+    <addMenu v-if="addMenuVis" @close="addMenuVis = false"></addMenu>
     <previewBox v-if="preVis" @close="preVis = false"></previewBox>
 </template>
 <script setup>
@@ -65,10 +65,23 @@ const handleAdd = () => {
     addMenuVis.value = true
 }
 
+
 const handleSave = () => {
     menusStore.saveMenu(() => {
         ElMessage.success("保存成功！")
     })
+}
+
+function onKeydown(e) {
+    const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+
+    if (
+        (isMac && e.metaKey && e.key === 's') ||
+        (!isMac && e.ctrlKey && e.key === 's')
+    ) {
+        e.preventDefault()
+        handleSave()
+    }
 }
 
 const handleClear = () => {
@@ -81,7 +94,7 @@ const handleClear = () => {
 
 const handleDelete = () => {
     ElMessageBox.confirm('确认删除画布吗?', '提示', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }).then(() => {
-        menusStore.deleteMenu(() => {
+        menusStore.removeMenu(() => {
             ElMessage.success("删除成功！")
         })
     })
@@ -91,6 +104,14 @@ const preVis = ref(false)
 const handlePre = () => {
     preVis.value = true
 }
+
+onMounted(() => {
+    window.addEventListener('keydown', onKeydown)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('keydown', onKeydown)
+})
 
 </script>
 <style scoped lang="scss">

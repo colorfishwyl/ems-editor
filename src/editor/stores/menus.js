@@ -4,43 +4,47 @@ import { useGraphStore } from "./graph";
 export const useMenusStore = defineStore('menus', {
   state: () => ({ menus: [], current: [], services: {} }),
   getters: {
-    currentMenu: (state) => state.menus.find(item => item.code === state.current[0])?.children.find(item => item.code === state.current[1]),
+    currentMenu: (state) => state.menus.find(item => item.id === state.current[0])?.children.find(item => item.id === state.current[1]),
   },
   actions: {
-    setCurrentMenu(keyPath, reload = false) {
+    async setCurrentMenu(keyPath, reload = false) {
       const graphStore = useGraphStore()
       if (JSON.stringify(keyPath) === JSON.stringify(this.current) && reload === false) {
         return false
       }
       this.current = keyPath
-      graphStore.loadMenu(this.services.getMenuJson(keyPath[1]))
-      console.log(this.services.getMenuJson(keyPath[1]))
+      graphStore.loadMenu(await this.services.getMenu(keyPath[1]))
     },
-    loadAllMenus() {
-      this.menus = this.services?.getAllMenus()
+    async loadAllMenus(reload = false) {
+      this.menus = await this.services?.getAllMenus()
+      if (reload && this.menus[0] && this.menus[0].children[0]) {
+        this.setCurrentMenu([this.menus[0].id, this.menus[0].children[0].id])
+      }
     },
-    addMenu(form, callback) {
-      const path = this.services?.addMenu(form)
+    async addMenu(form, callback) {
+      const menusItem = await this.services?.addMenu(form)
       this.loadAllMenus()
-      this.setCurrentMenu(path)
+      this.setCurrentMenu([menusItem.parentId, menusItem.id])
       if (callback) callback()
     },
-    saveMenu(callback) {
+    async saveMenu(callback) {
       const graphStore = useGraphStore()
       const menusJson = {
         name: graphStore.name,
-        code: this.current[1],
+        id: this.current[1],
+        parentId: this.current[0],
         style: graphStore.style,
         value: graphStore.graph.toJSON()
       }
-      this.services.saveMenus(menusJson)
+      await this.services.saveMenus(menusJson)
       if (callback) callback()
     },
     clearMenu(callback) {
       const graphStore = useGraphStore()
       const menusJson = {
         name: graphStore.name,
-        code: this.current[1],
+        id: this.current[1],
+        parentId: this.current[0],
         style: graphStore.style,
         value: {}
       }
@@ -48,8 +52,17 @@ export const useMenusStore = defineStore('menus', {
       graphStore.graph.clearCells()
       if (callback) callback()
     },
-    deleteMenu(callback) {
-
+    async removeMenu(callback) {
+      await this.services.removeMenu(this.current[1])
+      await this.loadAllMenus()
+      if (this.menus[0] && this.menus[0].children[0]) {
+        this.setCurrentMenu([this.menus[0].id, this.menus[0].children[0].id])
+      } else {
+        const graphStore = useGraphStore()
+        graphStore.graph.clearCells()
+        graphStore.name = ''
+        graphStore.id = ''
+      }
       if (callback) callback()
     }
   },

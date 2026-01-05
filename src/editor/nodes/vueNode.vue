@@ -1,7 +1,8 @@
 <template>
     <div :style="{ width: width + 'px', height: height + 'px' }" class="testNode">
-        <el-progress type="circle" :percentage="percentage" :width="wid">
+        <el-progress type="circle" :percentage="percentage" :width="50">
         </el-progress>
+        <el-button @click.stop="handleButtonClick($event)">按钮</el-button>
     </div>
 </template>
 
@@ -26,6 +27,12 @@ const updateSize = ({ current }) => {
 const updateData = ({ current }) => {
     const { progress } = current
     percentage.value = progress
+}
+
+const handleButtonClick = (e) => {
+    e.stopPropagation();  // 确保事件不会继续传播
+    console.log('按钮被点击');
+    // 在这里添加你的按钮点击逻辑
 }
 
 let node = null

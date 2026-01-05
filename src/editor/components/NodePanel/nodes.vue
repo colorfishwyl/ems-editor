@@ -26,7 +26,9 @@
                         <el-collapse-item :title="cItem.name" :name="cIndex">
                             <div class="expand-content"
                                 :style="{ gridTemplateColumns: cItem.layout ? cItem.layout : '1fr 1fr 1fr' }">
-                                <template v-for="(iconItem, iconIndex) in cItem.list" :key="iconIndex">
+                                <template
+                                    v-for="(iconItem, iconIndex) in cItem.list.filter(i => i.name.includes(nav1Filter))"
+                                    :key="iconIndex">
                                     <div class="graphic" @mousedown="startDrag($event, iconItem)"
                                         :title="iconItem.name">
                                         <template v-if="iconItem.renderType === renderType.IMG">
@@ -38,6 +40,9 @@
                                         </template>
                                         <template v-if="iconItem.renderType === renderType.SVG">
                                             <div class="svg-icon" v-html="iconItem.icon"></div>
+                                        </template>
+                                        <template v-if="iconItem.renderType === renderType.OTHER">
+                                            <i :class="iconItem.icon" style="font-size: 24px;"></i>
                                         </template>
                                         <p>{{ iconItem.name }}</p>
                                     </div>
@@ -60,8 +65,9 @@ import layout_4 from '../../../assets/topoImg/layout_4.png'
 import layout_5 from '../../../assets/topoImg/layout_5.png'
 import layout_6 from '../../../assets/topoImg/layout_6.png'
 import layout_7 from '../../../assets/topoImg/layout_7.png'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { Document, Menu as IconMenu, Location, Search, Picture as IconPicture } from '@element-plus/icons-vue'
+import { Shape } from '@antv/x6'
 import { useGraphStore } from "../../stores/graph";
 import { iconList } from './icons'
 const graphStore = useGraphStore()
@@ -69,6 +75,7 @@ const renderType = {
     IMG: 'img',
     ICON: 'icon',
     SVG: 'svg',
+    OTHER: 'other'
 }
 
 const nav1Current = ref(0)
@@ -82,14 +89,18 @@ const nav1 = ref([
                 name: '基础',
                 layout: '1fr 1fr 1fr',
                 list: [
-                    { name: '文字', renderType: 'icon', nodeType: 'text', icon: 'iconfont icon-wenzi' },
-                    { name: '数值', renderType: 'icon', nodeType: 'data', icon: 'iconfont icon-juxingkuang' },
-                    { name: '图标', renderType: 'icon', nodeType: 'icon', icon: 'iconfont icon-tubiao' },
-                    { name: '图片', renderType: 'icon', nodeType: 'img', icon: 'iconfont icon-tupian' },
+                    { name: '线段', renderType: 'icon', icon: 'iconfont icon-xianduan', data: { type: 'line' } },
+                    { name: '文字', renderType: 'icon', icon: 'iconfont icon-wenzi', data: { type: 'text' } },
+                    { name: '数值', renderType: 'icon', icon: 'iconfont icon-shuzhi', data: { type: 'data' } },
+                    { name: '图标', renderType: 'icon', icon: 'iconfont icon-tubiao', data: { type: 'icon' } },
+                    { name: '图片', renderType: 'icon', icon: 'iconfont icon-tupian', data: { type: 'img' } },
+                    { name: '自定义', renderType: 'other', icon: 'iconfont icon-tupian', data: { type: 'other' } }
                 ]
             },
-            { name: '图形1', list: [] },
-            { name: '图形2', list: [] }
+            { name: '图形', list: [] },
+            { name: '表格', list: [] },
+            { name: '图表', list: [] },
+            { name: '表单', list: [] }
         ]
     },
     {
@@ -101,14 +112,14 @@ const nav1 = ref([
                 name: '布局',
                 layout: '1fr 1fr',
                 list: [
-                    { name: '布局1', renderType: 'img', nodeType: 'img', icon: layout_0 },
-                    { name: '布局2', renderType: 'img', nodeType: 'img', icon: layout_1 },
-                    { name: '布局3', renderType: 'img', nodeType: 'img', icon: layout_2 },
-                    { name: '布局4', renderType: 'img', nodeType: 'img', icon: layout_3 },
-                    { name: '布局5', renderType: 'img', nodeType: 'img', icon: layout_4 },
-                    { name: '布局6', renderType: 'img', nodeType: 'img', icon: layout_5 },
-                    { name: '布局7', renderType: 'img', nodeType: 'img', icon: layout_6 },
-                    { name: '布局8', renderType: 'img', nodeType: 'img', icon: layout_7 }
+                    { name: '布局1', renderType: 'img', icon: layout_0, data: { type: 'layout' } },
+                    { name: '布局2', renderType: 'img', icon: layout_1, data: { type: 'layout' } },
+                    { name: '布局3', renderType: 'img', icon: layout_2, data: { type: 'layout' } },
+                    { name: '布局4', renderType: 'img', icon: layout_3, data: { type: 'layout' } },
+                    { name: '布局5', renderType: 'img', icon: layout_4, data: { type: 'layout' } },
+                    { name: '布局6', renderType: 'img', icon: layout_5, data: { type: 'layout' } },
+                    { name: '布局7', renderType: 'img', icon: layout_6, data: { type: 'layout' } },
+                    { name: '布局8', renderType: 'img', icon: layout_7, data: { type: 'layout' } }
                 ]
             },
             // { name: '主题', list: [] }
@@ -125,8 +136,8 @@ const nav1 = ref([
                     return {
                         name: i.name,
                         renderType: 'svg',
-                        nodeType: 'svg',
-                        icon: i.svg
+                        icon: i.svg,
+                        data: { type: 'svg' }
                     }
                 })
             },
@@ -152,15 +163,42 @@ const handleExpend = () => {
 const startDrag = (e, iconItem) => {
     // const type = iconItem.nodeType;
     console.log(iconItem)
-    let node
-    if (iconItem.nodeType === 'svg') {
-        node = graphStore.graph.createNode({ shape: 'svg-node' });
-        node.setData({ svg: iconItem.icon, name: iconItem.name })
+    if (iconItem.renderType === 'other') {
+        const tempNode = graphStore.graph.createNode({ shape: 'custom-vue-node' });
+        tempNode.setData({ ...{ icon: iconItem.icon, name: iconItem.name }, ...iconItem.data })
+        graphStore.dnd.start(tempNode, e);
     } else {
-        node = graphStore.graph.createNode({ shape: 'custom-vue-node' });
+        const tempNode = graphStore.graph.createNode({ shape: iconItem.renderType + '-node' });
+        tempNode.setData({ ...{ icon: iconItem.icon, name: iconItem.name }, ...iconItem.data })
+        graphStore.dnd.start(tempNode, e);
     }
-    graphStore.dnd.start(node, e);
+
 };
+
+
+const nodeAdd = ({ node }) => {
+    if (node.data?.type === 'line') {
+        const pos = node.position();
+        console.log(node, node.position())
+        node.remove();
+        // 创建Edge
+        const edge = graphStore.graph.addEdge({
+            source: { x: pos.x - 50, y: pos.y },
+            target: { x: pos.x + 50, y: pos.y },
+            router: 'normal',
+            attrs: { line: { stroke: '#1890ff', strokeWidth: 2, sourceMarker: null, targetMarker: null } }
+        });
+        graphStore.graph.select(edge);
+    }
+}
+
+onMounted(() => {
+    graphStore.graph.on('node:added', nodeAdd)
+})
+
+onBeforeUnmount(() => {
+    graphStore.graph.off('node:added', nodeAdd)
+})
 
 </script>
 <style scoped lang="scss">
