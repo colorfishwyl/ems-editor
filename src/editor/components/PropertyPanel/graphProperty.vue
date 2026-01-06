@@ -117,7 +117,7 @@ const handleWH = () => {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    padding: 20px;
+    padding: 20px 0;
     overflow-y: auto;
 
     :deep(.el-upload) {

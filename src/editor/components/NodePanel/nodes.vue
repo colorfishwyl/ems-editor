@@ -90,7 +90,7 @@ const nav1 = ref([
                 layout: '1fr 1fr 1fr',
                 list: [
                     { name: '线段', renderType: 'icon', icon: 'iconfont icon-xianduan', data: { type: 'line' } },
-                    { name: '文字', renderType: 'icon', icon: 'iconfont icon-wenzi', data: { type: 'text' } },
+                    { name: '基础文字', renderType: 'icon', icon: 'iconfont icon-wenzi', data: { type: 'text' } },
                     { name: '数值', renderType: 'icon', icon: 'iconfont icon-shuzhi', data: { type: 'data' } },
                     { name: '图标', renderType: 'icon', icon: 'iconfont icon-tubiao', data: { type: 'icon' } },
                     { name: '图片', renderType: 'icon', icon: 'iconfont icon-tupian', data: { type: 'img' } },
@@ -164,7 +164,7 @@ const startDrag = (e, iconItem) => {
     // const type = iconItem.nodeType;
     console.log(iconItem)
     if (iconItem.renderType === 'other') {
-        const tempNode = graphStore.graph.createNode({ shape: 'custom-vue-node' });
+        const tempNode = graphStore.graph.createNode({ shape: 'vue-node' });
         tempNode.setData({ ...{ icon: iconItem.icon, name: iconItem.name }, ...iconItem.data })
         graphStore.dnd.start(tempNode, e);
     } else {
@@ -181,12 +181,38 @@ const nodeAdd = ({ node }) => {
         const pos = node.position();
         console.log(node, node.position())
         node.remove();
-        // 创建Edge
+        const start = graphStore.graph.addNode({
+            x: pos.x - 50,
+            y: pos.y,
+            width: 5,
+            height: 5,
+            attrs: {
+                body: {
+                    fill: 'transparent',
+                    stroke: 'transparent',
+                },
+            },
+            zIndex: 1
+        })
+        const end = graphStore.graph.addNode({
+            x: pos.x + 50,
+            y: pos.y,
+            width: 5,
+            height: 5,
+            attrs: {
+                body: {
+                    fill: 'transparent',
+                    stroke: 'transparent',
+                },
+            },
+            zIndex: 1
+        })
         const edge = graphStore.graph.addEdge({
-            source: { x: pos.x - 50, y: pos.y },
-            target: { x: pos.x + 50, y: pos.y },
+            source: start,
+            target: end,
             router: 'normal',
-            attrs: { line: { stroke: '#1890ff', strokeWidth: 2, sourceMarker: null, targetMarker: null } }
+            attrs: { line: { stroke: '#1890ff', strokeWidth: 2, sourceMarker: null, targetMarker: null } },
+            zIndex: 0,
         });
         graphStore.graph.select(edge);
     }

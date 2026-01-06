@@ -1,8 +1,8 @@
 <template>
-    <div :style="{ width: width + 'px', height: height + 'px' }" class="testNode">
-        <el-progress type="circle" :percentage="percentage" :width="50">
+    <div :style="{ width: width + 'px', height: height + 'px' }" class="vueNode">
+        <el-progress type="circle" :percentage="nodeData.progress" :width="wid">
         </el-progress>
-        <el-button @click.stop="handleButtonClick($event)">按钮</el-button>
+        <!-- <el-button @click.stop="handleButtonClick($event)">按钮</el-button> -->
     </div>
 </template>
 
@@ -10,7 +10,7 @@
 import { ref, onMounted, onBeforeUnmount, inject, computed } from 'vue'
 
 const getNode = inject('getNode')
-const percentage = ref(80)
+const nodeData = ref({})
 
 const width = ref(128)
 const height = ref(128)
@@ -25,8 +25,8 @@ const updateSize = ({ current }) => {
 }
 
 const updateData = ({ current }) => {
-    const { progress } = current
-    percentage.value = progress
+    console.log(current)
+    nodeData.value = { ...nodeData.value, ...current }
 }
 
 const handleButtonClick = (e) => {
@@ -42,6 +42,7 @@ onMounted(() => {
     node = getNode()
     width.value = node.size().width
     height.value = node.size().height
+    nodeData.value = node.getData()
     node.on('change:data', updateData)
     node.on('change:size', updateSize)
     timer = setInterval(() => {
@@ -61,10 +62,20 @@ onBeforeUnmount(() => {
 
 </script>
 <style scoped lang="scss">
-.testNode {
+.vueNode {
     display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
+    box-sizing: border-box;
+    opacity: v-bind("nodeData.opacity");
+    border-style: v-bind("nodeData.borderStyle");
+    border-width: v-bind("nodeData.borderWidth + 'px'");
+    border-color: v-bind("nodeData.borderColor");
+    border-radius: v-bind("nodeData.borderRadius + 'px'");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: v-bind("nodeData.backgroundColor");
+    background-image: v-bind("nodeData.backgroundImage");
 }
 </style>

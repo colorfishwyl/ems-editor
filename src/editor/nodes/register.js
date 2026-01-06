@@ -3,6 +3,16 @@ import vueNode from './vueNode.vue'
 import svgNode from './svgNode.vue';
 import iconNode from './iconfontNode.vue';
 
+const defaultData = {
+    borderStyle: 'none',
+    borderRadius: 0,
+    borderWidth: 0,
+    borderColor: '#5F95FF',
+    opacity: 1,
+    backgroundImage: 'none',
+    backgroundColor: 'transparent',
+}
+
 
 const ports = {
     groups: {
@@ -89,14 +99,22 @@ const registerInit = () => {
         width: 50,
         height: 50,
         data: {
-            icon: null
+            ...defaultData,
+            ...{
+                icon: null
+            }
         },
         component: iconNode,
     });
     register({
         shape: 'vue-node',
+        width: 50,
+        height: 50,
         data: {
-            progress: 70,
+            ...defaultData,
+            ...{
+                progress: 70,
+            }
         },
         component: vueNode,
     });
@@ -105,9 +123,11 @@ const registerInit = () => {
         width: 50,
         height: 50,
         data: {
-            svg: null
+            ...defaultData, ...{
+                svg: null
+            }
         },
-        ports: { ...ports },
+        // ports: { ...ports },
         component: svgNode,
     });
 };

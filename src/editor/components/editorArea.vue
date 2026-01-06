@@ -1,6 +1,6 @@
 <template>
   <div class="editorArea">
-    <Toolbar></Toolbar>
+    <Toolbar v-if="graphStore.graph"></Toolbar>
     <div class="drawBox">
       <div style="width: 100%; height: 100%">
         <div ref="container" class="editor-container"
@@ -104,7 +104,7 @@ onBeforeUnmount(() => {
 }
 
 .x6-widget-selection-box {
-  opacity: 1;
+  opacity: 0;
   border: 1px solid #239edd;
   box-shadow: none;
 }

@@ -150,10 +150,8 @@ export const useGraphStore = defineStore('editor-graph', {
       ).use(
         new Selection({
           rubberband: true,
-          rubberNode: true,
-          rubberEdge: true,
           showNodeSelectionBox: true,
-          showEdgeSelectionBox: true,
+          showEdgeSelectionBox: false,
           modifiers: ['meta', 'shift', 'ctrl'],
         }),
       ).use(new History())
@@ -186,6 +184,7 @@ export const useGraphStore = defineStore('editor-graph', {
 
     setZoom(scale) {
       this.zoom = Number(scale)
+      this.graph.zoomTo(scale);
     },
 
     updateSize(width, height, callback) {
@@ -206,47 +205,44 @@ export const useGraphStore = defineStore('editor-graph', {
         this.zoom = Number((sx * 100).toFixed(0)) // 转成百分比
       })
 
-      this.graph.on('node:resized', ({ node }) => {
-        console.log('Node resized:', node.id, node.size());
-      })
       const propertyStore = usePropertyStore()
       this.graph.on('blank:click', ({ e, x, y }) => {
         console.log('Blank click at:', x, y, e);
         propertyStore.setTarget('blank', null)
       });
 
-      this.graph.on('edge:click', ({ e, x, y }) => {
-        console.log('Edge click at:', x, y);
-        propertyStore.setTarget('edge', e)
+      this.graph.on('edge:click', ({ e, x, y, edge }) => {
+        console.log('edge:click', x, y, edge.id)
+        propertyStore.setTarget('edge', edge.id)
       });
 
-      this.graph.on('node:click', ({ e, x, y }) => {
-        console.log('Node click at:', x, y);
-        propertyStore.setTarget('node', e)
+      this.graph.on('node:click', ({ e, x, y, node }) => {
+        console.log('node:click', x, y, node.id)
+        propertyStore.setTarget('node', node.id)
       });
 
       this.graph.on('edge:mouseenter', ({ cell }) => {
-        // cell.addTools([
-        //   {
-        //     name: 'vertices',
-        //     args: {
-        //       attrs: { fill: '#666' },
-        //       modifiers: ['meta', 'shift', 'ctrl']
-        //     },
-        //   },
-        //   {
-        //     name: 'source-arrowhead',
-        //     args: {
-        //       attrs: { fill: '#666', 'stroke-width': 0, },
-        //     },
-        //   },
-        //   {
-        //     name: 'target-arrowhead',
-        //     args: {
-        //       attrs: { fill: '#666', 'stroke-width': 0, },
-        //     },
-        //   }
-        // ])
+        cell.addTools([
+          {
+            name: 'vertices',
+            args: {
+              attrs: { fill: '#666' },
+              modifiers: ['meta', 'shift', 'ctrl']
+            },
+          },
+          // {
+          //   name: 'source-arrowhead',
+          //   args: {
+          //     attrs: { fill: '#666', 'stroke-width': 0, },
+          //   },
+          // },
+          // {
+          //   name: 'target-arrowhead',
+          //   args: {
+          //     attrs: { fill: '#666', 'stroke-width': 0, },
+          //   },
+          // }
+        ])
       })
 
       this.graph.on('edge:mouseleave', ({ cell }) => {

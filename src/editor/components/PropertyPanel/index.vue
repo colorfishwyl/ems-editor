@@ -7,27 +7,46 @@
                 <div v-show="activeTab === index" class="activeLine"></div>
             </div>
         </div>
-        <div class="main">
+        <div class="main" v-if="reload">
             <template v-if="targetType === 'blank'">
                 <graphProperty v-if="activeTab === 0" />
             </template>
             <template v-else>
-                <!-- <mapProperty v-if="activeTab === 0" /> -->
+                <Base v-if="activeTab === 0" />
+                <DataBind v-else-if="activeTab === 1" />
             </template>
         </div>
     </div>
 </template>
 <script setup>
-import { ref } from 'vue'
-import { usePropertyStore } from '../../stores/property'
+import { ref, provide, inject, nextTick, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import graphProperty from './graphProperty.vue'
+import Base from './base.vue'
+import DataBind from './data.vue'
+import { usePropertyStore } from '../../stores/property'
+import { useGraphStore } from "../../stores/graph";
 
+const graphStore = useGraphStore()
 const propertyStore = usePropertyStore()
-const { targetType, tabs, activeTab } = storeToRefs(propertyStore)
+const { targetType, tabs, activeTab, cellId } = storeToRefs(propertyStore)
 const handleActive = (index) => {
     activeTab.value = index
 }
+
+let cell = cellId.value ? graphStore.graph.getCellById(cellId.value) : null
+provide('getCurCell', () => cell)
+provide('cellId', cellId)
+
+const reload = ref(true)
+watch(cellId, () => {
+    console.log("cellId", cellId.value)
+    cell = graphStore.graph.getCellById(cellId.value)
+    reload.value = false
+    nextTick(() => {
+        reload.value = true
+    })
+})
 </script>
 <style scoped lang="scss">
 .prop {
@@ -90,25 +109,29 @@ const handleActive = (index) => {
     }
 
     .main {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0 10px;
         height: calc(100% - 40px);
         background-color: #1e2430;
+        overflow-y: auto;
 
-        ::-webkit-scrollbar {
+        &::-webkit-scrollbar {
             width: 3px;
             height: 3px;
             background: transparent;
         }
 
-        ::-webkit-scrollbar-corner {
+        &::-webkit-scrollbar-corner {
             background-color: transparent;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background-color: #1e2430 !important;
+        &::-webkit-scrollbar-thumb {
+            background-color: #c5cddb !important;
             border-radius: 4px;
         }
 
-        ::-webkit-scrollbar-track {
+        &::-webkit-scrollbar-track {
             background-color: transparent !important;
         }
     }
